@@ -113,6 +113,20 @@ def extract_jpg_from_pdf(relative_path, output_location=''):
 
 	identifier = image_pdf_file_name.replace('.pdf', '')
 	new_image_file_name = 'dte_aerial_' + identifier + '.jpg'
+
+	####################################################################################################################
+	'''
+	6/4 - addition to create directory structure
+	'''
+	new_image_full_path = output_location + new_image_file_name
+	if not os.path.exists(os.path.dirname(new_image_full_path)):
+		try:
+			os.makedirs(os.path.dirname(new_image_full_path))
+		except OSError as exc:  # Guard against race condition
+			if exc.errno != errno.EEXIST:
+				raise
+	####################################################################################################################
+
 	jpg_file = open(output_location + new_image_file_name, 'wb')
 	jpg_file.write(image_object._data)
 	jpg_file.close()
