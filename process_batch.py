@@ -10,6 +10,7 @@ import sys
 import json
 import csv
 import copy
+import re
 
 # local modules
 import extract_using_pypdf
@@ -87,9 +88,21 @@ def create_full_record(base_record, image_record, location_input, match_mode='id
 def create_base_record(batch_metadata):
     index_file_name = batch_metadata['Index Records'][0]['Index File Name']
     source_relative_path = batch_metadata['Index Records'][0]['Source Relative Path']
-    year = source_relative_path.split('\\')[-2]
-    index_county = source_relative_path.split('\\')[-3]
-    index_county = index_county[0].upper() + index_county[1:]
+
+    '''
+    6/4 
+        - alteration for Mac, or perhaps new input types
+        - use regex as opposed to string splitting
+    '''
+
+    # OLD
+    # year = source_relative_path.split('\\')[-2]
+    # index_county = source_relative_path.split('\\')[-3]
+    # index_county = index_county[0].upper() + index_county[1:]
+
+    # NEW
+    index_county,year = re.match(r'.+?/([a-zA-Z]+)([0-9]+).+?', source_relative_path).groups()
+
     base_record = {
         'Descriptive': {
             'Year': year,
@@ -151,18 +164,27 @@ def match_and_combine_records(batch_metadata, georeferenced_link_data, manual_pa
 
     for image_record in image_records:
         file_identifier = image_record['Image File Name'].replace('.pdf', '')
+
+        '''
+        6/4 
+            - removing input/pdf_files/ from file_identifier to support matching
+        '''
+        file_identifier = file_identifier.split('/')[-1]
+
         # If an image and link match has been made manually in manual_pairs.csv, make the match
         if file_identifier in manual_pairs.keys():
             link_record_found = find_link_record_with_id(manual_pairs[file_identifier], link_records)
             full_image_record = create_full_record(base_record, image_record, link_record_found, 'manual')
             full_image_records.append(full_image_record)
             matched_link_record_ids.append(link_record_found['PDF Object ID Number'])
+
         # If an image had no accompanying link but coordinates were visually collected, create location metadata
         elif file_identifier in files_without_links.keys():
             visual_coordinate_pair = files_without_links[file_identifier]
             arcgis_location_dict = collect_arcgis_info_for_coordinate_pair(visual_coordinate_pair, constants)
             full_image_record = create_full_record(base_record, image_record, arcgis_location_dict, 'visual')
             full_image_records.append(full_image_record)
+
         else:
             # Otherwise find all links pointing to the same image file
             matching_link_records = []

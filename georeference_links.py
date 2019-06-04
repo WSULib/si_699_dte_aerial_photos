@@ -170,7 +170,14 @@ def run_georeferencing_workflow(batch_metadata_file_path, output_name, output_lo
     # Find data in address_pairs.csv associated with the index file name
     pair_index = 0
     for address_pair in address_pairs:
-        if address_pair['Index File Name'] == index_file_name:
+
+        '''
+        6/4
+            - adding prefix to match csv
+            - lower casing to avoid mismatch
+        '''
+
+        if ('input/pdf_files/' + address_pair['Index File Name']).lower() == index_file_name.lower():
             current_index_address_pair = address_pair
             break
         pair_index += 1
