@@ -5,3 +5,4 @@ ubuntu_venv/
 .idea
 .DS_Store
 **/.DS_Store
+arcgis_geocoding_cache.json
