@@ -87,8 +87,8 @@ def create_full_record(base_record, image_record, location_input, match_mode='id
 def create_base_record(batch_metadata):
     index_file_name = batch_metadata['Index Records'][0]['Index File Name']
     source_relative_path = batch_metadata['Index Records'][0]['Source Relative Path']
-    year = source_relative_path.split('\\')[-2]
-    index_county = source_relative_path.split('\\')[-3]
+    year = source_relative_path.split('/')[-2]
+    index_county = source_relative_path.split('/')[-3]
     index_county = index_county[0].upper() + index_county[1:]
     base_record = {
         'Descriptive': {
