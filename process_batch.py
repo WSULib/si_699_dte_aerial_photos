@@ -17,6 +17,7 @@ import georeference_links
 import misc_functions
 
 # global variables
+PATH_DELIMITER = misc_functions.PATH_DELIMITER
 MANUAL_PAIRS_FILENAME = 'manual_pairs.csv'
 FILES_WITHOUT_LINKS_FILENAME = 'files_without_links.csv'
 
@@ -87,8 +88,8 @@ def create_full_record(base_record, image_record, location_input, match_mode='id
 def create_base_record(batch_metadata):
     index_file_name = batch_metadata['Index Records'][0]['Index File Name']
     source_relative_path = batch_metadata['Index Records'][0]['Source Relative Path']
-    year = source_relative_path.split('\\')[-2]
-    index_county = source_relative_path.split('\\')[-3]
+    year = source_relative_path.split(PATH_DELIMITER)[-2]
+    index_county = source_relative_path.split(PATH_DELIMITER)[-3]
     index_county = index_county[0].upper() + index_county[1:]
     base_record = {
         'Descriptive': {
@@ -285,7 +286,7 @@ if __name__=="__main__":
     print('\n** Script Results Summary **')
     if match_issues:
         print('-- One or more matches failed, or one or more image records had multiple matches --')
-        print('-- Investigate and add file name and PDF object pairs to manual_pairs.csv --')
+        print('-- Investigate and add data to manual_pairs.csv and files_without_links.csv --')
     else:
         print('++ No match issues occurred ++')
     print('Number of image records after extraction: ' + str(len(batch_metadata['Image Records'])))
